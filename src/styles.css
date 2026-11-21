@@ -1,0 +1,545 @@
+/* ---------- Theme tokens ---------- */
+:root {
+  color-scheme: light dark;
+  --bg: #fff4e6;
+  --dot: #f6dcc0;
+  --surface: #ffffff;
+  --surface-2: #fff7ee;
+  --text: #2d2440;
+  --muted: #6b6080;
+  --border: #f0d9c2;
+  --edge: #e8c9aa; /* chunky bottom edge under cards/buttons */
+  --primary: #ff6b6b;
+  --primary-edge: #d94a4a;
+  --primary-ink: #2d2440;
+  --accent: #ffd23f;
+  --focus: #2f7fe0;
+  --tile: #fff2e2;
+  --tile-edge: #f0d2b0;
+  --win-glow: rgba(255, 210, 63, 0.55);
+  --line: #2d2440;
+
+  --radius: 22px;
+  --radius-sm: 14px;
+  --font: 'Fredoka', ui-rounded, 'Segoe UI', system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1d1a2f;
+    --dot: #2a2644;
+    --surface: #2a2645;
+    --surface-2: #322d52;
+    --text: #f6f1ff;
+    --muted: #b7aed0;
+    --border: #403a66;
+    --edge: #15122a;
+    --primary: #ff7b7b;
+    --primary-edge: #c24f5a;
+    --primary-ink: #1d1a2f;
+    --focus: #8fc1ff;
+    --tile: #363058;
+    --tile-edge: #1f1b38;
+    --win-glow: rgba(255, 210, 63, 0.35);
+    --line: #f6f1ff;
+  }
+}
+
+/* ---------- Base ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--text);
+  background-color: var(--bg);
+  background-image: radial-gradient(var(--dot) 2px, transparent 2px);
+  background-size: 26px 26px;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.mark {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: var(--mark-light);
+  overflow: visible;
+}
+
+/* ---------- Layout ---------- */
+.app {
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px 40px;
+}
+
+.screen {
+  width: 100%;
+  max-width: 460px;
+}
+
+.card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 0 var(--edge);
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1.05rem;
+  padding: 12px 22px;
+  border-radius: 999px;
+  line-height: 1.1;
+  user-select: none;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--primary-ink);
+  box-shadow: 0 5px 0 var(--primary-edge);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  box-shadow: 0 4px 0 var(--edge);
+}
+
+.btn-ghost {
+  background: transparent;
+  padding: 8px 12px;
+  color: var(--muted);
+}
+.btn-ghost:hover {
+  color: var(--text);
+}
+
+.btn-big {
+  display: block;
+  width: 100%;
+  margin-top: 22px;
+  font-size: 1.4rem;
+  padding: 16px;
+}
+
+.is-pulsing {
+  animation: pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 5px 0 var(--primary-edge), 0 0 0 0 rgba(255, 107, 107, 0.45);
+  }
+  50% {
+    box-shadow: 0 5px 0 var(--primary-edge), 0 0 0 10px rgba(255, 107, 107, 0);
+  }
+}
+
+/* ---------- Home ---------- */
+.title {
+  margin: 8px 0 20px;
+  text-align: center;
+  font-size: clamp(2.4rem, 11vw, 3.4rem);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1;
+}
+.title-letter {
+  display: inline-block;
+}
+.title-letter:nth-child(3n + 1) {
+  color: #e5484d;
+}
+.title-letter:nth-child(3n + 2) {
+  color: #2f7fe0;
+}
+.title-letter:nth-child(3n) {
+  color: #1f9d6b;
+}
+@media (prefers-color-scheme: dark) {
+  .title-letter:nth-child(3n + 1) {
+    color: var(--primary);
+  }
+  .title-letter:nth-child(3n + 2) {
+    color: #6aaeff;
+  }
+  .title-letter:nth-child(3n) {
+    color: #4fd39e;
+  }
+}
+
+.settings {
+  padding: 18px;
+  display: grid;
+  gap: 18px;
+}
+
+.field {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.field-label {
+  padding: 0;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.segmented {
+  display: flex;
+  background: var(--surface-2);
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  padding: 4px;
+}
+.segment {
+  position: relative;
+  flex: 1;
+  text-align: center;
+  padding: 9px 6px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--muted);
+  transition: color 0.2s;
+}
+.segment.is-checked {
+  color: var(--primary-ink);
+}
+.segment-pill {
+  position: absolute;
+  inset: 0;
+  background: var(--primary);
+  border-radius: 999px;
+  box-shadow: 0 3px 0 var(--primary-edge);
+}
+.segment-text {
+  position: relative;
+}
+.segment:has(:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.set-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.set-card,
+.side-card {
+  position: relative;
+  cursor: pointer;
+  background: var(--surface-2);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 0 var(--edge);
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.set-card {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 12px 6px 8px;
+}
+.set-card.is-checked,
+.side-card.is-checked {
+  border-color: var(--primary);
+  background: var(--surface);
+  box-shadow: 0 4px 0 var(--primary-edge);
+}
+.set-card:has(:focus-visible),
+.side-card:has(:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.set-marks {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.set-marks .mark {
+  width: 30px;
+  height: 30px;
+}
+.set-vs {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+.set-name {
+  font-weight: 500;
+  font-size: 0.92rem;
+}
+
+.side-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.side-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+}
+.side-card .mark {
+  width: 34px;
+  height: 34px;
+  flex: none;
+}
+.side-name {
+  display: block;
+  font-weight: 600;
+}
+.side-note {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* ---------- Game ---------- */
+.game {
+  display: grid;
+  gap: 16px;
+}
+
+.game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.game-mode {
+  font-weight: 500;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.scoreboard {
+  display: grid;
+  grid-template-columns: 1fr 0.8fr 1fr;
+  gap: 10px;
+}
+.score-tile {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 0 var(--edge);
+  padding: 8px 6px;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  transition: border-color 0.25s, transform 0.25s;
+}
+.score-tile.is-active {
+  border-color: var(--primary);
+  transform: translateY(-3px);
+}
+.score-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.score-mark {
+  width: 18px !important;
+  height: 18px !important;
+}
+.score-value {
+  display: inline-block;
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.status {
+  display: flex;
+  justify-content: center;
+  min-height: 2.4rem;
+  overflow: hidden;
+}
+.status-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+.status-text.is-final {
+  font-size: 1.6rem;
+}
+.status-mark {
+  width: 28px !important;
+  height: 28px !important;
+}
+
+/* ---------- Board ---------- */
+/* Gap is 3% of the board width; Board.tsx CENTRES assumes this. */
+.board {
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+/* cqi = board width, because the board is the query container for its children. */
+.board-row {
+  height: 31.333cqi;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 3cqi;
+}
+.board-cell {
+  display: contents;
+}
+
+.cell {
+  position: relative;
+  appearance: none;
+  border: none;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  border-radius: var(--radius);
+}
+.cell[aria-disabled='true'] {
+  cursor: default;
+}
+.cell-tile {
+  position: absolute;
+  inset: 0;
+  background: var(--tile);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 0 var(--tile-edge);
+  transition: background-color 0.2s, box-shadow 0.3s;
+}
+@media (hover: hover) {
+  .cell[aria-disabled='false']:hover .cell-tile {
+    background: var(--surface);
+  }
+}
+.cell.is-win .cell-tile {
+  background: var(--surface);
+  border-color: var(--accent);
+  box-shadow: 0 6px 0 var(--tile-edge), 0 0 0 6px var(--win-glow);
+}
+.board.is-over .cell:not(.is-win) .cell-mark {
+  opacity: 0.45;
+  transition: opacity 0.4s 0.3s;
+}
+.board.is-draw .cell .cell-mark {
+  opacity: 0.6;
+}
+
+.cell-mark {
+  position: absolute;
+  inset: 18%;
+  pointer-events: none;
+}
+.cell-ghost {
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+@media (hover: hover) {
+  .cell:hover .cell-ghost {
+    opacity: 0.25;
+  }
+}
+.cell:focus-visible .cell-ghost {
+  opacity: 0.25;
+}
+
+.win-line {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+.win-line line {
+  stroke: var(--line);
+  stroke-width: 2.4; /* board units: the board is 100 wide */
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+
+.game-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+@media (max-width: 380px) {
+  .set-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .score-label {
+    font-size: 0.78rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-pulsing {
+    animation: none;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Must come after the base .mark rule so it wins. */
+@media (prefers-color-scheme: dark) {
+  .mark {
+    color: var(--mark-dark);
+  }
+}
