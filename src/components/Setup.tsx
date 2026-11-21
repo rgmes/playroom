@@ -1,19 +1,21 @@
 import { motion } from 'motion/react';
 import { useId } from 'react';
 import { MARK_SETS, getMarkSet } from '../marks/library';
-import type { Action, Settings } from '../game/store';
-import type { Player } from '../game/logic';
+import type { GameDef } from '../games/registry';
+import type { Player } from '../games/types';
+import { go, href } from '../router';
+import type { Action, Settings } from '../state/store';
 import { Mark } from './Mark';
 import { Segmented } from './Segmented';
+import { Title } from './Title';
 
 interface Props {
+  def: GameDef;
   settings: Settings;
   dispatch: React.Dispatch<Action>;
 }
 
-const TITLE = 'Tic Tac Toe';
-
-export function Home({ settings, dispatch }: Props) {
+export function Setup({ def, settings, dispatch }: Props) {
   const set = getMarkSet(settings.markSetId);
   const setName = useId();
   const sideName = useId();
@@ -21,20 +23,12 @@ export function Home({ settings, dispatch }: Props) {
 
   return (
     <div className="home">
-      <h1 className="title" aria-label={TITLE}>
-        {TITLE.split('').map((ch, i) => (
-          <motion.span
-            key={i}
-            aria-hidden="true"
-            className="title-letter"
-            initial={{ y: -30, opacity: 0, rotate: -12 }}
-            animate={{ y: 0, opacity: 1, rotate: 0 }}
-            transition={{ type: 'spring', stiffness: 420, damping: 14, delay: i * 0.04 }}
-          >
-            {ch === ' ' ? ' ' : ch}
-          </motion.span>
-        ))}
-      </h1>
+      <header className="game-header">
+        <motion.a className="btn btn-ghost" href={href.hub} whileTap={{ scale: 0.94 }}>
+          <span aria-hidden="true">←</span> Playroom
+        </motion.a>
+      </header>
+      <Title text={def.name} small />
 
       <div className="card settings">
         <Segmented
@@ -58,6 +52,9 @@ export function Home({ settings, dispatch }: Props) {
               { value: 'hard', label: 'Hard' },
             ]}
           />
+        )}
+        {settings.mode === 'cpu' && settings.difficulty === 'hard' && (
+          <p className="field-note">{def.hardNote}</p>
         )}
 
         <fieldset className="field">
@@ -133,7 +130,7 @@ export function Home({ settings, dispatch }: Props) {
 
       <motion.button
         className="btn btn-primary btn-big"
-        onClick={() => dispatch({ type: 'start' })}
+        onClick={() => go(href.play(def.id))}
         whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.94 }}
       >

@@ -1,9 +1,8 @@
-// Pure game rules. No React, no DOM.
+// Tic Tac Toe rules. Pure: no React, no DOM.
+import { Board, Cell, Outcome, Player, Rules } from '../types';
 
-/** 0 = first player (moves first), 1 = second player. */
-export type Player = 0 | 1;
-export type Cell = Player | null;
-export type Board = readonly Cell[];
+export type { Board, Cell, Player } from '../types';
+export { other } from '../types';
 
 export const LINES: readonly (readonly [number, number, number])[] = [
   [0, 1, 2],
@@ -38,14 +37,9 @@ export function isFull(board: Board): boolean {
   return board.every((c) => c !== null);
 }
 
-export type Outcome =
-  | { kind: 'playing' }
-  | { kind: 'win'; player: Player; line: readonly [number, number, number] }
-  | { kind: 'draw' };
-
 export function outcome(board: Board): Outcome {
   const w = winner(board);
-  if (w) return { kind: 'win', ...w };
+  if (w) return { kind: 'win', player: w.player, cells: [...w.line], lines: [[w.line[0], w.line[2]]] };
   if (isFull(board)) return { kind: 'draw' };
   return { kind: 'playing' };
 }
@@ -76,4 +70,12 @@ export function play(board: Board, index: number): Cell[] {
   return next;
 }
 
-export const other = (p: Player): Player => (p === 0 ? 1 : 0);
+export const ticTacToeRules: Rules = {
+  empty: emptyBoard,
+  turn: currentPlayer,
+  outcome,
+  apply(board, move) {
+    if (move < 0 || move > 8 || board[move] !== null || outcome(board).kind !== 'playing') return null;
+    return { board: play(board, move), cell: move };
+  },
+};

@@ -147,6 +147,92 @@ export const MARK_SETS: MarkSet[] = [
     ],
   },
   {
+    id: 'critters',
+    name: 'Critters',
+    marks: [
+      {
+        id: 'frog',
+        name: 'Frog',
+        color: { light: '#2f9e44', dark: '#69db7c' },
+        paths: [
+          'M16 62 Q16 42 34 40 Q50 38 66 40 Q84 42 84 62 Q84 82 50 82 Q16 82 16 62 Z',
+          `${circle(33, 32, 10)} ${circle(67, 32, 10)}`,
+          'M33 31 V33 M67 31 V33',
+          'M34 62 Q50 74 66 62',
+        ],
+        stroke: 7,
+      },
+      {
+        id: 'fox',
+        name: 'Fox',
+        color: { light: '#e8590c', dark: '#ff922b' },
+        paths: [
+          'M16 18 L38 36 L62 36 L84 18 L78 52 L50 84 L22 52 Z',
+          'M38 54 V56 M62 54 V56',
+          'M45 70 H55 L50 75 Z',
+        ],
+        stroke: 7,
+      },
+    ],
+  },
+  {
+    id: 'spooky',
+    name: 'Spooky',
+    marks: [
+      {
+        id: 'ghost',
+        name: 'Ghost',
+        color: { light: '#7048e8', dark: '#b197fc' },
+        paths: [
+          'M24 82 V44 Q24 16 50 16 Q76 16 76 44 V82 L67 74 L58 82 L50 74 L42 82 L33 74 Z',
+          'M41 42 V48 M59 42 V48',
+          circle(50, 60, 5),
+        ],
+        stroke: 7,
+      },
+      {
+        id: 'pumpkin',
+        name: 'Pumpkin',
+        color: { light: '#f76707', dark: '#ffa94d' },
+        paths: [
+          'M50 32 Q82 26 84 56 Q84 82 50 82 Q16 82 16 56 Q18 26 50 32 Z',
+          'M38 33 Q28 56 38 81 M62 33 Q72 56 62 81',
+          'M50 32 Q49 22 57 15',
+        ],
+        stroke: 7,
+      },
+    ],
+  },
+  {
+    id: 'space',
+    name: 'Space',
+    marks: [
+      {
+        id: 'robot',
+        name: 'Robot',
+        color: { light: '#1c7ed6', dark: '#74c0fc' },
+        paths: [
+          'M24 34 H76 V80 H24 Z',
+          `M50 34 V22 ${circle(50, 16, 5)}`,
+          'M38 52 H42 M58 52 H62',
+          'M38 66 H62 M24 54 H16 M76 54 H84',
+        ],
+        stroke: 7,
+      },
+      {
+        id: 'alien',
+        name: 'Alien',
+        color: { light: '#37b24d', dark: '#8ce99a' },
+        paths: [
+          'M50 14 Q82 16 80 46 Q76 74 50 86 Q24 74 20 46 Q18 16 50 14 Z',
+          'M30 44 Q40 38 46 52 Q34 56 30 44 Z M70 44 Q60 38 54 52 Q66 56 70 44 Z',
+          'M44 70 Q50 73 56 70',
+        ],
+        stroke: 7,
+      },
+    ],
+  },
+  {
     id: 'shapes',
     name: 'Shapes',
     marks: [

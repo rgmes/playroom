@@ -1,6 +1,7 @@
 import { Board, LINES, Player, currentPlayer, emptyCells, other, play, winner } from './logic';
 
-export type Difficulty = 'easy' | 'medium' | 'hard';
+import type { Difficulty } from '../types';
+export type { Difficulty } from '../types';
 export type Rng = () => number;
 
 const pick = <T,>(items: T[], rng: Rng): T => items[Math.floor(rng() * items.length)];

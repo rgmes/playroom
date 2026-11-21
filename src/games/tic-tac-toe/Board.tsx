@@ -1,40 +1,30 @@
 import { motion, useAnimate, useReducedMotion } from 'motion/react';
 import { useRef, useState } from 'react';
-import type { Board as BoardT, Outcome } from '../game/logic';
-import type { MarkDef } from '../marks/library';
-import { Mark } from './Mark';
-
-interface Props {
-  board: BoardT;
-  marks: [MarkDef, MarkDef];
-  /** Mark shown as the hover preview (current human player), or null if humans can't move now. */
-  preview: MarkDef | null;
-  result: Outcome;
-  gameId: number;
-  onPlay: (index: number) => void;
-}
+import type { BoardProps } from '../registry';
+import { Mark } from '../../components/Mark';
 
 // Cell centres as % of the board. Must match the grid gap in CSS (--gap: 3%).
 const CENTRES = [15.667, 50, 84.333];
 const centre = (i: number) => ({ x: CENTRES[i % 3], y: CENTRES[Math.floor(i / 3)] });
 
 /** Line through the winning cells, overshooting the end cells a little. */
-function strike(line: readonly number[]) {
-  const a = centre(line[0]);
-  const b = centre(line[2]);
+function strike([from, to]: [number, number]) {
+  const a = centre(from);
+  const b = centre(to);
   const len = Math.hypot(b.x - a.x, b.y - a.y);
   const ex = ((b.x - a.x) / len) * 9;
   const ey = ((b.y - a.y) / len) * 9;
   return { x1: a.x - ex, y1: a.y - ey, x2: b.x + ex, y2: b.y + ey };
 }
 
-export function Board({ board, marks, preview, result, gameId, onPlay }: Props) {
+export function TicTacToeBoard({ board, marks, preview, result, gameId, onPlay }: BoardProps) {
   const [focused, setFocused] = useState(4);
   const cellRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [scope, animate] = useAnimate<HTMLDivElement>();
   const reduce = useReducedMotion();
   const over = result.kind !== 'playing';
-  const winLine = result.kind === 'win' ? result.line : null;
+  const winCells = result.kind === 'win' ? result.cells : null;
+  const winLines = result.kind === 'win' ? result.lines : [];
 
   const wiggle = (i: number) => {
     const el = cellRefs.current[i];
@@ -77,7 +67,7 @@ export function Board({ board, marks, preview, result, gameId, onPlay }: Props) 
             const i = r * 3 + c;
             const v = board[i];
             const mark = v === null ? null : marks[v];
-            const isWin = winLine?.includes(i) ?? false;
+            const isWin = winCells?.includes(i) ?? false;
             const label = `Row ${r + 1}, column ${c + 1}, ${mark ? mark.name : 'empty'}`;
             return (
               <div role="gridcell" className="board-cell" key={c}>
@@ -105,7 +95,7 @@ export function Board({ board, marks, preview, result, gameId, onPlay }: Props) 
                     }
                     transition={
                       isWin
-                        ? { duration: 0.5, delay: 0.25 + winLine!.indexOf(i) * 0.08 }
+                        ? { duration: 0.5, delay: 0.25 + winCells!.indexOf(i) * 0.08 }
                         : { type: 'spring', stiffness: 400, damping: 20, delay: i * 0.035 }
                     }
                   />
@@ -133,16 +123,16 @@ export function Board({ board, marks, preview, result, gameId, onPlay }: Props) 
         </div>
       ))}
 
-      {winLine && (
-        <svg className="win-line" viewBox="0 0 100 100" aria-hidden="true">
+      {winLines.map((line) => (
+        <svg key={line.join('-')} className="win-line" viewBox="0 0 100 100" aria-hidden="true">
           <motion.line
-            {...strike(winLine)}
+            {...strike(line)}
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
             transition={{ duration: 0.4, delay: 0.35, ease: 'easeInOut' }}
           />
         </svg>
-      )}
+      ))}
     </div>
   );
 }

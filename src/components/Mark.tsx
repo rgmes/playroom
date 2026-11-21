@@ -8,12 +8,14 @@ interface Props {
   /** Seconds to wait before drawing starts. */
   delay?: number;
   className?: string;
+  /** Multiplies stroke width, for small sizes such as marks on discs. */
+  strokeScale?: number;
 }
 
 const STROKE_TIME = 0.28;
 
 /** An SVG mark. Colour comes from CSS custom properties set here. */
-export function Mark({ mark, draw = true, delay = 0, className }: Props) {
+export function Mark({ mark, draw = true, delay = 0, className, strokeScale = 1 }: Props) {
   const reduce = useReducedMotion();
   const animate = draw && !reduce;
   const style = {
@@ -36,7 +38,7 @@ export function Mark({ mark, draw = true, delay = 0, className }: Props) {
           d={d}
           fill={mark.fill && i === 0 ? 'currentColor' : 'none'}
           stroke="currentColor"
-          strokeWidth={mark.stroke ?? 11}
+          strokeWidth={(mark.stroke ?? 11) * strokeScale}
           strokeLinecap="round"
           strokeLinejoin="round"
           initial={animate ? { pathLength: 0, fillOpacity: 0 } : false}
