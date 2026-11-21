@@ -31,7 +31,7 @@ export default function App() {
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={key}
-            className={`screen ${route.name === 'play' && route.game === 'four-in-a-row' ? 'screen-wide' : ''}`}
+            className={`screen ${route.name === 'play' && def?.wide ? 'screen-wide' : ''}`}
             initial={{ opacity: 0, y: 24, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -24, scale: 0.97 }}

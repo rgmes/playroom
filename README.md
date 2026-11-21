@@ -11,6 +11,9 @@ Frog vs Fox, Robot vs Alien, and more.
 - **Tic Tac Toe**: the classic 3x3. On Hard the computer never loses; a draw is the best you can do.
 - **Four in a Row**: drop discs into a 7x6 board and line up four across, down or diagonally.
   Hard is tough but beatable. The computer thinks in a Web Worker so the page never freezes.
+- **Dots & Boxes**: take turns joining two dots; close a box to claim it and go again. Most boxes
+  wins. Pick any size from 2x2 to 16x16 boxes on the setup screen; big boards pan and zoom.
+  Hard knows the chain tricks (double-dealing, keeping control) but can be beaten.
 
 Scores are kept per game and per mode in your browser (localStorage).
 
@@ -35,8 +38,13 @@ Opening `dist/index.html` directly from disk will not work.
 
 1. Create `src/games/<id>/` with the rules (`logic.ts`, implementing `Rules` from
    `src/games/types.ts`), a computer player, a `Board` component and a `Preview` for the hub card.
+   The board can be any shape you like; shared screens treat it as opaque.
 2. Add the id to `GameId` and `GAME_IDS` in `src/games/types.ts`, its rules to
-   `src/games/rules.ts`, and its entry to `GAMES` in `src/games/registry.tsx`.
+   `src/games/rules.ts`, and its entry to `GAMES` in `src/games/registry.tsx`. The entry also
+   says how to describe a move for screen readers (`describeMove`), and can add live points
+   (`points`), setup options such as a board size (`Options`) and an extra-turn cheer (`againNote`).
+3. If the computer needs time to think, run it in a Web Worker with the helpers in
+   `src/games/worker-client.ts` (see `four-in-a-row/` or `dots-and-boxes/`).
 
 ## Adding a mark pair
 

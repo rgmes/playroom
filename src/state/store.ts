@@ -1,4 +1,4 @@
-import type { Cell, Difficulty, GameId, Mode, Player, Rules } from '../games/types';
+import type { BoardSize, Difficulty, GameId, Mode, Player, Rules } from '../games/types';
 import { GAME_IDS } from '../games/types';
 import { RULES } from '../games/rules';
 import { DEFAULT_SET_ID } from '../marks/library';
@@ -9,6 +9,8 @@ export interface Settings {
   /** Which slot the human plays against the computer. Slot 0 always moves first. */
   humanSide: Player;
   markSetId: string;
+  /** Chosen board size, for games that have one (Dots & Boxes). */
+  sizes: Partial<Record<GameId, BoardSize>>;
 }
 
 /**
@@ -25,10 +27,11 @@ export type AllScores = Record<GameId, Scores>;
 
 export interface Match {
   game: GameId;
-  board: Cell[];
+  /** The game's own board type; only that game's rules and components look inside. */
+  board: unknown;
   /** Unique per board. Computer moves carry it, so a move for an old board is ignored. */
   gameId: number;
-  /** The cell filled by the last move (for animation and announcements). */
+  /** The cell (or line) filled by the last move, for animation and announcements. */
   lastCell: number | null;
 }
 
@@ -55,6 +58,7 @@ export const defaultSettings: Settings = {
   difficulty: 'medium',
   humanSide: 0,
   markSetId: DEFAULT_SET_ID,
+  sizes: {},
 };
 
 export interface Saved {
@@ -66,7 +70,7 @@ export function initialState(saved?: Saved): AppState {
   const scores = {} as AllScores;
   for (const id of GAME_IDS) scores[id] = { ...zeroScores(), ...saved?.scores?.[id] };
   return {
-    settings: { ...defaultSettings, ...saved?.settings },
+    settings: { ...defaultSettings, ...saved?.settings, sizes: { ...saved?.settings?.sizes } },
     scores,
     match: null,
     serial: 0,
@@ -75,10 +79,11 @@ export function initialState(saved?: Saved): AppState {
 
 function freshMatch(state: AppState, game: GameId): AppState {
   const serial = state.serial + 1;
-  return { ...state, serial, match: { game, board: RULES[game].empty(), gameId: serial, lastCell: null } };
+  const board = RULES[game].empty(state.settings.sizes[game]);
+  return { ...state, serial, match: { game, board, gameId: serial, lastCell: null } };
 }
 
-function record(state: AppState, rules: Rules, board: Cell[], game: GameId): AllScores {
+function record(state: AppState, rules: Rules<unknown>, board: unknown, game: GameId): AllScores {
   const result = rules.outcome(board);
   if (result.kind === 'playing') return state.scores;
   const { mode, humanSide } = state.settings;

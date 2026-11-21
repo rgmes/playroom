@@ -763,6 +763,288 @@ button {
   stroke-width: 16;
 }
 
+/* ---------- Live points (boxes in the current game) ---------- */
+.points {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: -6px;
+}
+.points-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  box-shadow: 0 3px 0 var(--edge);
+  transition: border-color 0.25s, transform 0.25s;
+}
+.points-pill.is-active {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+.points-mark {
+  width: 20px !important;
+  height: 20px !important;
+}
+.points-name {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.points-value {
+  display: inline-block;
+  min-width: 1.2em;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+/* ---------- Dots & Boxes ---------- */
+.dab {
+  width: 100%;
+  min-width: 0; /* a grid item: without this, a big board would widen the page instead of panning */
+}
+.dab-zoom {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.dab-zoom-btn {
+  padding: 6px 16px;
+  font-size: 1.15rem;
+  box-shadow: 0 3px 0 var(--edge);
+}
+.dab-zoom-fit {
+  font-size: 0.9rem;
+}
+.dab-zoom-fit[aria-pressed='true'] {
+  border-color: var(--primary);
+}
+.dab-viewport {
+  overflow: auto;
+  overscroll-behavior: contain;
+  touch-action: manipulation;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 0 var(--edge);
+}
+.dab-svg {
+  display: block;
+  margin: 0 auto; /* centres a small board; a big one starts at the left edge and pans */
+  overflow: visible;
+}
+.dab-dot {
+  fill: var(--text);
+  pointer-events: none;
+}
+.dab-line {
+  stroke-width: 11;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+.dab-line.p0 {
+  stroke: var(--p0-light);
+}
+.dab-line.p1 {
+  stroke: var(--p1-light);
+}
+.dab-ghost {
+  opacity: 0.35;
+}
+.dab-line.is-new {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: dab-draw 0.26s ease-out forwards;
+}
+@keyframes dab-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.dab-halo {
+  stroke: var(--accent);
+  stroke-width: 28;
+  stroke-linecap: round;
+  opacity: 0.55;
+  pointer-events: none;
+  animation: dab-halo 1.6s ease-in-out infinite;
+}
+@keyframes dab-halo {
+  50% {
+    opacity: 0.2;
+  }
+}
+.dab-box {
+  transform-box: fill-box;
+  transform-origin: center;
+  pointer-events: none;
+}
+.dab-box rect {
+  fill: currentColor;
+  opacity: 0.18;
+}
+.dab-box.p0 {
+  color: var(--p0-light);
+}
+.dab-box.p1 {
+  color: var(--p1-light);
+}
+.dab-box.is-new {
+  animation: dab-pop 0.4s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+@keyframes dab-pop {
+  from {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+}
+.dab-box.is-win rect {
+  opacity: 0.34;
+  animation: dab-win 0.9s ease-in-out 0.3s 3;
+}
+@keyframes dab-win {
+  50% {
+    opacity: 0.6;
+  }
+}
+.dab-svg.is-over .dab-box:not(.is-win) {
+  opacity: 0.45;
+  transition: opacity 0.4s 0.3s;
+}
+.dab-hit {
+  fill: transparent;
+  stroke: none;
+  cursor: pointer;
+  outline: none;
+}
+.dab-hit[aria-disabled='true'] {
+  cursor: default;
+}
+.dab-hit:focus-visible {
+  fill: color-mix(in srgb, var(--focus) 14%, transparent);
+  stroke: var(--focus);
+  stroke-width: 5;
+}
+.preview-dab {
+  width: 100%;
+  height: 100%;
+}
+
+/* Board size picker */
+.size-presets {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.size-chip {
+  appearance: none;
+  font: inherit;
+  color: inherit;
+  display: grid;
+  gap: 2px;
+  padding: 8px 4px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  box-shadow: 0 3px 0 var(--edge);
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.size-chip.is-checked {
+  border-color: var(--primary);
+  background: var(--surface);
+}
+.size-chip-name {
+  font-weight: 600;
+}
+.size-chip-dims {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.size-chip:focus-visible,
+.stepper-btn:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.size-steppers {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 14px;
+}
+.size-times {
+  font-size: 1.4rem;
+  color: var(--muted);
+  padding-bottom: 10px;
+}
+.stepper {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+}
+.stepper-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+.stepper-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  background: var(--surface-2);
+  border: 2px solid var(--border);
+  border-radius: 999px;
+}
+.stepper-btn {
+  appearance: none;
+  border: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font: inherit;
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1;
+  background: var(--primary);
+  color: var(--primary-ink);
+  box-shadow: 0 3px 0 var(--primary-edge);
+  cursor: pointer;
+}
+.stepper-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.stepper-value {
+  min-width: 2ch;
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.field-note.size-note {
+  margin: 8px 0 0;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dab-line.is-new {
+    stroke-dasharray: none;
+    animation: none;
+  }
+  .dab-halo,
+  .dab-box.is-new,
+  .dab-box.is-win rect {
+    animation: none;
+  }
+}
+
 /* Dark-mode overrides. Kept last so they win over the base rules above. */
 @media (prefers-color-scheme: dark) {
   .disc {
@@ -770,5 +1052,17 @@ button {
   }
   .disc .mark {
     color: var(--ink-dark);
+  }
+  .dab-line.p0 {
+    stroke: var(--p0-dark);
+  }
+  .dab-line.p1 {
+    stroke: var(--p1-dark);
+  }
+  .dab-box.p0 {
+    color: var(--p0-dark);
+  }
+  .dab-box.p1 {
+    color: var(--p1-dark);
   }
 }

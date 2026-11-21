@@ -1,4 +1,5 @@
-import { GAME_IDS, type GameId } from '../games/types';
+import { GAME_IDS, type BoardSize, type GameId } from '../games/types';
+import { MAX_SIZE, MIN_SIZE } from '../games/dots-and-boxes/logic';
 import { MARK_SETS } from '../marks/library';
 import type { AppState, Saved, Scores, Settings, Tally } from './store';
 
@@ -11,6 +12,18 @@ const isTally = (t: unknown): t is Tally =>
   typeof t === 'object' &&
   ['a', 'b', 'draws'].every((k) => Number.isInteger((t as Record<string, unknown>)[k]));
 
+const inRange = (n: unknown) => Number.isInteger(n) && (n as number) >= MIN_SIZE && (n as number) <= MAX_SIZE;
+
+function readSizes(s: unknown): Partial<Record<GameId, BoardSize>> {
+  const out: Partial<Record<GameId, BoardSize>> = {};
+  if (!s || typeof s !== 'object') return out;
+  for (const id of GAME_IDS) {
+    const v = (s as Record<string, { cols?: unknown; rows?: unknown } | undefined>)[id];
+    if (v && inRange(v.cols) && inRange(v.rows)) out[id] = { cols: v.cols as number, rows: v.rows as number };
+  }
+  return out;
+}
+
 function readSettings(s: Record<string, unknown> | undefined): Partial<Settings> {
   const out: Partial<Settings> = {};
   if (!s || typeof s !== 'object') return out;
@@ -18,6 +31,8 @@ function readSettings(s: Record<string, unknown> | undefined): Partial<Settings>
   if (s.difficulty === 'easy' || s.difficulty === 'medium' || s.difficulty === 'hard') out.difficulty = s.difficulty;
   if (s.humanSide === 0 || s.humanSide === 1) out.humanSide = s.humanSide;
   if (MARK_SETS.some((m) => m.id === s.markSetId)) out.markSetId = s.markSetId as string;
+  const sizes = readSizes(s.sizes);
+  if (Object.keys(sizes).length) out.sizes = sizes;
   return out;
 }
 

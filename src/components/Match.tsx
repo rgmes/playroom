@@ -1,7 +1,7 @@
 import confetti from 'canvas-confetti';
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useLayoutEffect } from 'react';
-import type { GameDef } from '../games/registry';
+import type { AnyGameDef } from '../games/registry';
 import { other } from '../games/types';
 import type { Player } from '../games/types';
 import { getMarkSet } from '../marks/library';
@@ -11,7 +11,7 @@ import type { Action, AppState, Match as MatchT } from '../state/store';
 import { Mark } from './Mark';
 
 interface Props {
-  def: GameDef;
+  def: AnyGameDef;
   state: AppState;
   dispatch: React.Dispatch<Action>;
 }
@@ -19,6 +19,8 @@ interface Props {
 const DIFFICULTY_LABEL = { easy: 'Easy', medium: 'Medium', hard: 'Hard' } as const;
 /** Minimum time the computer "thinks", so its moves don't feel instant. */
 const MIN_THINK_MS = 450;
+/** Shorter pause when the computer moves again in the same turn (taking a chain of boxes). */
+const AGAIN_THINK_MS = 170;
 
 const prefersDark = () =>
   typeof matchMedia !== 'undefined' && matchMedia('(prefers-color-scheme: dark)').matches;
@@ -43,6 +45,9 @@ function Match({ def, state, match, dispatch }: Props & { match: MatchT }) {
   const cpuSide = other(humanSide);
   const isCpuTurn = mode === 'cpu' && result.kind === 'playing' && turn === cpuSide;
   const humanCanMove = result.kind === 'playing' && !isCpuTurn;
+  const last = lastCell !== null ? def.describeMove(board, lastCell, marks, mode === 'cpu') : null;
+  // Same player again (Dots & Boxes: closing a box earns another line).
+  const again = !!def.againNote && result.kind === 'playing' && last !== null && last.player === turn;
 
   // Computer move. Cancelled on new game / leaving / unmount; the reducer also drops
   // it if gameId changed in between.
@@ -53,14 +58,15 @@ function Match({ def, state, match, dispatch }: Props & { match: MatchT }) {
     const started = performance.now();
     def.pickMove(board, difficulty).then((move) => {
       if (cancelled) return;
-      const wait = MIN_THINK_MS + Math.random() * 250 - (performance.now() - started);
+      const think = again ? AGAIN_THINK_MS + Math.random() * 60 : MIN_THINK_MS + Math.random() * 250;
+      const wait = think - (performance.now() - started);
       timer = setTimeout(() => dispatch({ type: 'move', move, gameId }), Math.max(0, wait));
     });
     return () => {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [isCpuTurn, board, difficulty, gameId, dispatch, def]);
+  }, [isCpuTurn, again, board, difficulty, gameId, dispatch, def]);
 
   // Confetti for wins worth celebrating (any win in 2-player, only your wins vs computer).
   const winPlayer = result.kind === 'win' ? result.player : null;
@@ -91,21 +97,22 @@ function Match({ def, state, match, dispatch }: Props & { match: MatchT }) {
   } else if (result.kind === 'draw') {
     status = "It's a draw!";
   } else if (mode === 'cpu') {
-    status = isCpuTurn ? 'Computer is thinking…' : 'Your turn';
+    if (isCpuTurn) status = again ? 'Computer goes again…' : 'Computer is thinking…';
+    else status = again ? `${def.againNote} Go again` : 'Your turn';
   } else {
-    status = `${marks[turn].name}'s turn`;
+    status = again ? `${def.againNote} ${marks[turn].name} goes again` : `${marks[turn].name}'s turn`;
   }
+
+  const points: [number, number] | null = def.points ? def.points(board) : null;
 
   // Screen readers also hear what was just played.
   let announcement = status;
-  if (lastCell !== null && board[lastCell] !== null) {
-    const p = board[lastCell]!;
-    const who =
-      mode === 'cpu'
-        ? `${p === humanSide ? 'You' : 'Computer'} ${def.verb} ${marks[p].name}`
-        : `${marks[p].name} ${def.verb}`;
-    const where = def.verb === 'dropped' ? `in ${def.describeCell(lastCell)}` : `at ${def.describeCell(lastCell)}`;
-    announcement = `${who} ${where}. ${status}`;
+  if (last) {
+    const who = mode === 'cpu' ? (last.player === humanSide ? 'You' : 'Computer') : marks[last.player].name;
+    announcement = `${who} ${last.text}. ${status}`;
+  }
+  if (points && result.kind !== 'playing') {
+    announcement += ` Boxes: ${nameFor(0)} ${points[0]}, ${nameFor(1)} ${points[1]}.`;
   }
 
   const tally = state.scores[def.id][mode];
@@ -161,6 +168,30 @@ function Match({ def, state, match, dispatch }: Props & { match: MatchT }) {
       <p className="sr-only" aria-live="polite" role="status">
         {announcement}
       </p>
+
+      {points && (
+        <div className="points" aria-label="Boxes this game">
+          {([leftSlot, rightSlot] as Player[]).map((p) => (
+            <span
+              key={p}
+              className={`points-pill ${result.kind === 'playing' && turn === p ? 'is-active' : ''}`}
+            >
+              <Mark mark={marks[p]} draw={false} className="points-mark" />
+              <span className="points-name">{nameFor(p)}</span>
+              <motion.span
+                key={points[p]}
+                className="points-value"
+                initial={{ scale: 1.5 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 14 }}
+              >
+                {points[p]}
+              </motion.span>
+              <span className="sr-only"> {points[p] === 1 ? 'box' : 'boxes'}</span>
+            </span>
+          ))}
+        </div>
+      )}
 
       <BoardView
         board={board}

@@ -1,7 +1,7 @@
 import { motion } from 'motion/react';
 import { useId } from 'react';
 import { MARK_SETS, getMarkSet } from '../marks/library';
-import type { GameDef } from '../games/registry';
+import type { AnyGameDef } from '../games/registry';
 import type { Player } from '../games/types';
 import { go, href } from '../router';
 import type { Action, Settings } from '../state/store';
@@ -10,7 +10,7 @@ import { Segmented } from './Segmented';
 import { Title } from './Title';
 
 interface Props {
-  def: GameDef;
+  def: AnyGameDef;
   settings: Settings;
   dispatch: React.Dispatch<Action>;
 }
@@ -56,6 +56,8 @@ export function Setup({ def, settings, dispatch }: Props) {
         {settings.mode === 'cpu' && settings.difficulty === 'hard' && (
           <p className="field-note">{def.hardNote}</p>
         )}
+
+        {def.Options && <def.Options settings={settings} update={update} />}
 
         <fieldset className="field">
           <legend className="field-label">Marks</legend>
